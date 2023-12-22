@@ -1,0 +1,44 @@
+data_pipeline:
+ _target_: Data_Collect_32.process_data.data_pipeline.PandasDataPipeline
+ steps: 
+  -
+   _target_: Data_Collect_32.process_data.data_cleaning.shift_close
+   _partial_: true
+  - 
+    _target_: Data_Collect_32.process_data.data_cleaning.create_label
+    _partial_: true
+  - 
+    _target_: Data_Collect_32.process_data.data_cleaning.drop_empty_window
+    _partial_: true
+  -
+    _target_: Data_Collect_32.process_data.data_window.add_normalized_cols
+    _partial_: true
+    cols:
+      - rsi
+      - mfi
+      - regrs
+      - cci
+      - sma
+      - tv
+    window: 50
+  -
+    _target_: Data_Collect_32.process_data.data_window.add_time_cols
+    _partial_: true
+    cols:
+     - williams
+    window: 50
+    
+  
+model:
+  model_params:
+    learning_rate: 0.1
+    max_depth: 5
+    min_samples_leaf: 1
+    max_leaf_nodes: 66
+    l2_regularization: 2
+    max_bins: 25
+    max_iter: 15
+    random_state: 1
+  feature_depth: 15
+
+

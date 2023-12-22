@@ -1,0 +1,101 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.17
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.3.0
+mlflow_version: 2.8.0
+model_size_bytes: 585463
+model_uuid: 45f0ed530d2840f29b3b949dac9fcb1a
+run_id: 88a644ff080a4c8abdd36f27eef6b2a8
+signature:
+  inputs: '[{"type": "double", "name": "rsi"}, {"type": "double", "name": "mfi"},
+    {"type": "double", "name": "regrs"}, {"type": "double", "name": "cci"}, {"type":
+    "double", "name": "is_in_time"}, {"type": "double", "name": "rsi_norm_0"}, {"type":
+    "double", "name": "rsi_norm_1"}, {"type": "double", "name": "rsi_norm_2"}, {"type":
+    "double", "name": "rsi_norm_3"}, {"type": "double", "name": "rsi_norm_4"}, {"type":
+    "double", "name": "rsi_norm_5"}, {"type": "double", "name": "rsi_norm_6"}, {"type":
+    "double", "name": "rsi_norm_7"}, {"type": "double", "name": "rsi_norm_8"}, {"type":
+    "double", "name": "rsi_norm_9"}, {"type": "double", "name": "rsi_norm_10"}, {"type":
+    "double", "name": "rsi_norm_11"}, {"type": "double", "name": "rsi_norm_12"}, {"type":
+    "double", "name": "rsi_norm_13"}, {"type": "double", "name": "rsi_norm_14"}, {"type":
+    "double", "name": "rsi_norm_15"}, {"type": "double", "name": "rsi_norm_16"}, {"type":
+    "double", "name": "rsi_norm_17"}, {"type": "double", "name": "rsi_norm_18"}, {"type":
+    "double", "name": "rsi_norm_19"}, {"type": "double", "name": "rsi_norm_20"}, {"type":
+    "double", "name": "rsi_norm_21"}, {"type": "double", "name": "rsi_norm_22"}, {"type":
+    "double", "name": "rsi_norm_23"}, {"type": "double", "name": "rsi_norm_24"}, {"type":
+    "double", "name": "mfi_norm_0"}, {"type": "double", "name": "mfi_norm_1"}, {"type":
+    "double", "name": "mfi_norm_2"}, {"type": "double", "name": "mfi_norm_3"}, {"type":
+    "double", "name": "mfi_norm_4"}, {"type": "double", "name": "mfi_norm_5"}, {"type":
+    "double", "name": "mfi_norm_6"}, {"type": "double", "name": "mfi_norm_7"}, {"type":
+    "double", "name": "mfi_norm_8"}, {"type": "double", "name": "mfi_norm_9"}, {"type":
+    "double", "name": "mfi_norm_10"}, {"type": "double", "name": "mfi_norm_11"}, {"type":
+    "double", "name": "mfi_norm_12"}, {"type": "double", "name": "mfi_norm_13"}, {"type":
+    "double", "name": "mfi_norm_14"}, {"type": "double", "name": "mfi_norm_15"}, {"type":
+    "double", "name": "mfi_norm_16"}, {"type": "double", "name": "mfi_norm_17"}, {"type":
+    "double", "name": "mfi_norm_18"}, {"type": "double", "name": "mfi_norm_19"}, {"type":
+    "double", "name": "mfi_norm_20"}, {"type": "double", "name": "mfi_norm_21"}, {"type":
+    "double", "name": "mfi_norm_22"}, {"type": "double", "name": "mfi_norm_23"}, {"type":
+    "double", "name": "mfi_norm_24"}, {"type": "double", "name": "williams_0"}, {"type":
+    "double", "name": "williams_1"}, {"type": "double", "name": "williams_2"}, {"type":
+    "double", "name": "williams_3"}, {"type": "double", "name": "williams_4"}, {"type":
+    "double", "name": "williams_5"}, {"type": "double", "name": "williams_6"}, {"type":
+    "double", "name": "williams_7"}, {"type": "double", "name": "williams_8"}, {"type":
+    "double", "name": "williams_9"}, {"type": "double", "name": "williams_10"}, {"type":
+    "double", "name": "williams_11"}, {"type": "double", "name": "williams_12"}, {"type":
+    "double", "name": "williams_13"}, {"type": "double", "name": "williams_14"}, {"type":
+    "double", "name": "williams_15"}, {"type": "double", "name": "williams_16"}, {"type":
+    "double", "name": "williams_17"}, {"type": "double", "name": "williams_18"}, {"type":
+    "double", "name": "williams_19"}, {"type": "double", "name": "williams_20"}, {"type":
+    "double", "name": "williams_21"}, {"type": "double", "name": "williams_22"}, {"type":
+    "double", "name": "williams_23"}, {"type": "double", "name": "williams_24"}, {"type":
+    "double", "name": "regrs_norm_0"}, {"type": "double", "name": "regrs_norm_1"},
+    {"type": "double", "name": "regrs_norm_2"}, {"type": "double", "name": "regrs_norm_3"},
+    {"type": "double", "name": "regrs_norm_4"}, {"type": "double", "name": "regrs_norm_5"},
+    {"type": "double", "name": "regrs_norm_6"}, {"type": "double", "name": "regrs_norm_7"},
+    {"type": "double", "name": "regrs_norm_8"}, {"type": "double", "name": "regrs_norm_9"},
+    {"type": "double", "name": "regrs_norm_10"}, {"type": "double", "name": "regrs_norm_11"},
+    {"type": "double", "name": "regrs_norm_12"}, {"type": "double", "name": "regrs_norm_13"},
+    {"type": "double", "name": "regrs_norm_14"}, {"type": "double", "name": "regrs_norm_15"},
+    {"type": "double", "name": "regrs_norm_16"}, {"type": "double", "name": "regrs_norm_17"},
+    {"type": "double", "name": "regrs_norm_18"}, {"type": "double", "name": "regrs_norm_19"},
+    {"type": "double", "name": "regrs_norm_20"}, {"type": "double", "name": "regrs_norm_21"},
+    {"type": "double", "name": "regrs_norm_22"}, {"type": "double", "name": "regrs_norm_23"},
+    {"type": "double", "name": "regrs_norm_24"}, {"type": "double", "name": "sma_norm_0"},
+    {"type": "double", "name": "sma_norm_1"}, {"type": "double", "name": "sma_norm_2"},
+    {"type": "double", "name": "sma_norm_3"}, {"type": "double", "name": "sma_norm_4"},
+    {"type": "double", "name": "sma_norm_5"}, {"type": "double", "name": "sma_norm_6"},
+    {"type": "double", "name": "sma_norm_7"}, {"type": "double", "name": "sma_norm_8"},
+    {"type": "double", "name": "sma_norm_9"}, {"type": "double", "name": "sma_norm_10"},
+    {"type": "double", "name": "sma_norm_11"}, {"type": "double", "name": "sma_norm_12"},
+    {"type": "double", "name": "sma_norm_13"}, {"type": "double", "name": "sma_norm_14"},
+    {"type": "double", "name": "sma_norm_15"}, {"type": "double", "name": "sma_norm_16"},
+    {"type": "double", "name": "sma_norm_17"}, {"type": "double", "name": "sma_norm_18"},
+    {"type": "double", "name": "sma_norm_19"}, {"type": "double", "name": "sma_norm_20"},
+    {"type": "double", "name": "sma_norm_21"}, {"type": "double", "name": "sma_norm_22"},
+    {"type": "double", "name": "sma_norm_23"}, {"type": "double", "name": "sma_norm_24"},
+    {"type": "double", "name": "cci_norm_0"}, {"type": "double", "name": "cci_norm_1"},
+    {"type": "double", "name": "cci_norm_2"}, {"type": "double", "name": "cci_norm_3"},
+    {"type": "double", "name": "cci_norm_4"}, {"type": "double", "name": "cci_norm_5"},
+    {"type": "double", "name": "cci_norm_6"}, {"type": "double", "name": "cci_norm_7"},
+    {"type": "double", "name": "cci_norm_8"}, {"type": "double", "name": "cci_norm_9"},
+    {"type": "double", "name": "cci_norm_10"}, {"type": "double", "name": "cci_norm_11"},
+    {"type": "double", "name": "cci_norm_12"}, {"type": "double", "name": "cci_norm_13"},
+    {"type": "double", "name": "cci_norm_14"}, {"type": "double", "name": "cci_norm_15"},
+    {"type": "double", "name": "cci_norm_16"}, {"type": "double", "name": "cci_norm_17"},
+    {"type": "double", "name": "cci_norm_18"}, {"type": "double", "name": "cci_norm_19"},
+    {"type": "double", "name": "cci_norm_20"}, {"type": "double", "name": "cci_norm_21"},
+    {"type": "double", "name": "cci_norm_22"}, {"type": "double", "name": "cci_norm_23"},
+    {"type": "double", "name": "cci_norm_24"}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int32", "shape": [-1]}}]'
+  params: null
+utc_time_created: '2023-11-11 09:14:45.129467'

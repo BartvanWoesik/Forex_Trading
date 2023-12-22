@@ -1,0 +1,16 @@
+artifact_uri: file:///C:/Users/bartw/Documents/cAlgo/Sources/Robots/Data_Collect_32/Data_Collect_32/mlruns/0/34fe7a0c7d64414aaeda7aea0ad522fd/artifacts
+deleted_time: 1699696189266
+end_time: 1699696180558
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: deleted
+run_id: 34fe7a0c7d64414aaeda7aea0ad522fd
+run_name: sassy-snake-272
+run_uuid: 34fe7a0c7d64414aaeda7aea0ad522fd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1699696180526
+status: 4
+tags: []
+user_id: bartw

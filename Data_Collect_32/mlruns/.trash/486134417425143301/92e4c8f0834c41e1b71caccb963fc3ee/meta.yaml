@@ -1,0 +1,16 @@
+artifact_uri: mlflow-artifacts:/486134417425143301/92e4c8f0834c41e1b71caccb963fc3ee/artifacts
+deleted_time: 1699696373892
+end_time: 1699696327533
+entry_point_name: ''
+experiment_id: '486134417425143301'
+lifecycle_stage: deleted
+run_id: 92e4c8f0834c41e1b71caccb963fc3ee
+run_name: magnificent-seal-86
+run_uuid: 92e4c8f0834c41e1b71caccb963fc3ee
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1699696327497
+status: 4
+tags: []
+user_id: bartw
