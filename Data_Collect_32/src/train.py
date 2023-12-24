@@ -5,8 +5,8 @@ from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
 import pickle
-from process_data.dataset import Dataset
-from process_data.data_splitter import data_splitter
+from ProcessData.dataset import Dataset
+from ProcessData.data_splitter import data_splitter
 from Evaluate.pips import get_pips_margin
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
