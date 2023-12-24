@@ -284,7 +284,7 @@ namespace cAlgo.Robots
          
             csvhead = csvhead + "\n";
             //csvhead = csvhead + "DateTime,IsFalling,RSI_Value,Max,RSI,SMA,MACD,Final,"\n";
-            fiName = DataDir + "\\Data_collect_32.csv";
+            fiName = DataDir + "\\Unprocessed_Data.csv";
             // Create directory if it does not exist
             if (System.IO.Directory.Exists(DataDir) == false)
             {

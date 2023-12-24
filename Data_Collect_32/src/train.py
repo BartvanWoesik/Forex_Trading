@@ -5,9 +5,9 @@ from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
 import pickle
-from Data_Collect_32.process_data.dataset import Dataset
-from Data_Collect_32.process_data.data_splitter import data_splitter
-from Data_Collect_32.Evaluate.pips import get_pips_margin
+from process_data.dataset import Dataset
+from process_data.data_splitter import data_splitter
+from Evaluate.pips import get_pips_margin
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.calibration import calibration_curve
@@ -24,7 +24,7 @@ def main():
 
         # Define pipeline
         pipeline = instantiate(cfg.data_pipeline)
-        df = pd.read_csv(PATH)
+        df = pd.read_csv(cfg.Data_Source)
         df = pipeline.apply(df.copy())
         model_features = create_window_list(cfg.model.feature_depth)
         dataset = Dataset(data = df, data_splitter = data_splitter)
