@@ -6,4 +6,4 @@ Data_Collect_32/mlruns/
 Data_Collect_32/obj/
 
 Data_Collect_32/bin/
-Data_Collect_32/__pycache__/
+Data_Collect_32/src/__pycache__/
