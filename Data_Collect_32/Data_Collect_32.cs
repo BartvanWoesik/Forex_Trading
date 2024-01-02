@@ -174,19 +174,9 @@ namespace cAlgo.Robots
             culture = CultureInfo.CreateSpecificCulture("en-US");
             // Create a list to add all Indicator values
             var sa = new System.Collections.Generic.List<string>();
-            DateTime dateRealServer = Server.Time;
-            TimeSpan timeOnly = dateRealServer.TimeOfDay;
 
-            // Define the start and end times as TimeSpan objects
-            TimeSpan startTime = new TimeSpan(8, 0, 0);   // 08:00:00
-            TimeSpan endTime = new TimeSpan(17, 0, 0);  // 17:00:00
-            int is_in_time = 0;
-            // Check if the time is between 08:00 and 17:00
-            if (timeOnly >= startTime && timeOnly <= endTime)
-            {
-                is_in_time = 1; 
-                
-            }
+
+            DateTime dateRealServer = Server.Time;
             
            
             //sa.Add(dateRealServer.ToShortDateString());
@@ -194,7 +184,6 @@ namespace cAlgo.Robots
             sa.Add(dateRealServer.ToString("dd.MM.yyyy HH:mm:ss"));
             // sa.Add(dateRealServer.ToString("H:mm"));
             csvhead = csvhead + "Datum" + ",";
-
 
             sa.Add(Bars.ClosePrices.Last(1).ToString("F6", culture));
             csvhead += "close_price,"; 
@@ -208,34 +197,37 @@ namespace cAlgo.Robots
             sa.Add(Bars.LowPrices.Last(1).ToString("F6", culture));
             csvhead += "low_price,";
 
-            sa.Add(_rsi.Result.Last(1).ToString("F1", culture));
-            csvhead += "rsi," ;
 
-            sa.Add(_MFI.Result.Last(1).ToString("F6", culture));
-            csvhead  +=  "mfi," ;
+            for(int i = 1; i< 5; i++) 
+            {
 
-            sa.Add(_TV.Result.Last(1).ToString("F6", culture));
-            csvhead += "tv,";
 
-            sa.Add(_sma.Result.Last(1).ToString("F6", culture));
-            csvhead += "sma,";
+                sa.Add(_rsi.Result.Last(i).ToString("F1", culture));
+                csvhead += "rsi" + i.ToString()+ ",";
 
-            sa.Add(_WilliamsP.Result.Last(1).ToString("F6", culture));
-            csvhead += "williams,";
+                sa.Add(_MFI.Result.Last(i).ToString("F6", culture));
+                csvhead  +=  "mfi"+ i.ToString()+ "," ;
 
-            sa.Add(_linearRegressionRS.Result.Last(1).ToString("F6", culture));
-            csvhead += "regrs,";
-            
-            sa.Add(_CCI.Result.Last(1).ToString("F6", culture));
-            csvhead += "cci,";
+                sa.Add(_TV.Result.Last(i).ToString("F6", culture));
+                csvhead += "tv"+ i.ToString()+ ",";
 
-            sa.Add(is_in_time.ToString("F1",culture));
-            csvhead += "is_in_time,";
-            
-            sa.Add(dateRealServer.Hour.ToString("F1", culture));
-            csvhead += "time";
+                sa.Add(_sma.Result.Last(i).ToString("F6", culture));
+                csvhead += "sma"+ i.ToString()+ ",";
+
+                sa.Add(_WilliamsP.Result.Last(i).ToString("F6", culture));
+                csvhead += "williams"+ i.ToString()+ ",";
+
+                sa.Add(_linearRegressionRS.Result.Last(i).ToString("F6", culture));
+                csvhead += "regrs"+ i.ToString()+ ",";
+                
+                sa.Add(_CCI.Result.Last(i).ToString("F6", culture));
+                csvhead += "cci"+ i.ToString() +",";
+
+
+
+            }
     
-
+            csvhead = csvhead.Remove(csvhead.Length -1, 1);
             
 
             // Put al list items in one "," delimited string

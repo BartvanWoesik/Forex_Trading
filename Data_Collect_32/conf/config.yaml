@@ -1,17 +1,17 @@
 data_pipeline:
- _target_: process_data.data_pipeline.PandasDataPipeline
+ _target_: ProcessData.data_pipeline.PandasDataPipeline
  steps: 
   -
-   _target_: process_data.data_cleaning.shift_close
+   _target_: ProcessData.data_cleaning.shift_close
    _partial_: true
   - 
-    _target_: process_data.data_cleaning.create_label
+    _target_: ProcessData.data_cleaning.create_label
     _partial_: true
   - 
-    _target_: process_data.data_cleaning.drop_empty_window
+    _target_: ProcessData.data_cleaning.drop_empty_window
     _partial_: true
   -
-    _target_: process_data.data_window.add_normalized_cols
+    _target_: ProcessData.data_window.add_normalized_cols
     _partial_: true
     cols:
       - rsi
@@ -20,13 +20,12 @@ data_pipeline:
       - cci
       - sma
       - tv
-    window: 50
-  -
-    _target_: process_data.data_window.add_time_cols
+    window: 3
+
+  - 
+    _target_: ProcessData.data_cleaning.drop_empty_window
     _partial_: true
-    cols:
-     - williams
-    window: 50
+
 
 Data_Source: './data/Unprocessed_Data.csv'   
   
@@ -40,6 +39,6 @@ model:
     max_bins: 25
     max_iter: 5
     random_state: 1
-  feature_depth: 20
+  feature_depth: 3
 
 
