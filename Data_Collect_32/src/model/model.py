@@ -1,11 +1,6 @@
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-
-
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-
 
 
 class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
@@ -22,17 +17,23 @@ class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
         norm_col_names = []
         tot_cols = []
         for col in self.cols:
-
             # Create col names
             cols_names = [col + str(i) for i in range(1, self.window + 1)]
-            norm_col_names = [col + '_norm_' + str(i) for i in range(1, self.window + 1)]
-
+            norm_col_names = [
+                col + "_norm_" + str(i) for i in range(1, self.window + 1)
+            ]
 
             ranges = np.apply_along_axis(self.min_max_norm, axis=1, arr=df[cols_names])
-            assert ranges.shape[0] ==  df.shape[0]
+            assert ranges.shape[0] == df.shape[0]
             df_ranges = pd.DataFrame(ranges, columns=norm_col_names)
-            df = pd.concat([df.reset_index(drop = True), df_ranges[norm_col_names].reset_index(drop = True)], axis=1)
-            tot_cols += norm_col_names 
+            df = pd.concat(
+                [
+                    df.reset_index(drop=True),
+                    df_ranges[norm_col_names].reset_index(drop=True),
+                ],
+                axis=1,
+            )
+            tot_cols += norm_col_names
             tot_cols += cols_names
         return df[tot_cols]
 
