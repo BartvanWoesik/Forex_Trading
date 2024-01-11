@@ -10,6 +10,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.calibration import calibration_curve
+from sklearn.metrics import brier_score_loss
 
 from Model.SklearnPipeline import CustomPipeline
 
@@ -25,12 +26,16 @@ def main():
         pipeline = instantiate(cfg.data_pipeline)
         df = pd.read_csv(cfg.Data_Source)
         df = pipeline.apply(df.copy())
-        model_features = ["rsi", "mfi", "regrs", "cci", "sma", "tv"]
+        model_features = ['Datum', 'close_price', 'open_price', 'high_price',
+       'low_price', 'rsi1', 'mfi1', 'tv1', 'sma1', 'williams1', 'regrs1',
+       'cci1', 'rsi2', 'mfi2', 'tv2', 'sma2', 'williams2', 'regrs2', 'cci2',
+       'rsi3', 'mfi3', 'tv3', 'sma3', 'williams3', 'regrs3', 'cci3', 'rsi4',
+       'mfi4', 'tv4', 'sma4', 'williams4', 'regrs4', 'cci4']
         dataset = Dataset(data=df, data_splitter=data_splitter)
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
         custompipeline = CustomPipeline(model_features, 4)
         custompipeline.pipeline.steps.append(("final model", clf))
-
+        print(dataset.X_train.columns)
         model = custompipeline.fit(
             dataset.X_train,
             dataset.y_train,
@@ -71,6 +76,8 @@ def main():
             "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
         )
 
+
+        mlflow.log_metric("brier", brier_score_loss(dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]))
         joblib.dump(model, "model.pkl")
 
         mlflow.log_artifact("conf\config.yaml")

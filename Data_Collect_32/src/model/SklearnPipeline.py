@@ -3,6 +3,16 @@ from sklearn.pipeline import Pipeline
 from .model import AddNormalizedColsTransformer
 
 
+class featureselector(BaseEstimator, TransformerMixin):
+    def __init__(self, features: list[str]) -> None:
+        self.features = set(features)
+
+    def transform(self, X):
+        return X[list(self.features)]
+    
+    def fit_transform(self, X, *fit_args):
+        return X[list(self.features)]
+
 class CustomPipeline(BaseEstimator, TransformerMixin):
     def __init__(self, cols_to_normalize, window=10):
         self.cols_to_normalize = cols_to_normalize
@@ -18,8 +28,13 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         )
 
     def fit(self, X, y=None, sample_weight=None):
-        transformed_data = self.pipeline.named_steps["add_normalized_cols"].transform(X)
-        self.pipeline.named_steps["final model"].fit(transformed_data, y, sample_weight)
+        # Transform data with all steps except the last one
+        transformed_data = X
+        for _, step in self.pipeline.steps[:-1]:
+            transformed_data = step.fit_transform(transformed_data, y, sample_weight)
+
+        # Fit the last step with the transformed data
+        self.pipeline.steps[-1][1].fit(transformed_data, y, sample_weight)
         return self
 
     def transform(self, X):
@@ -35,9 +50,3 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         return self.pipeline.named_steps["final model"].predict_proba(transformed_data)
 
 
-class featureselector:
-    def __init__(self, features: list[str]) -> None:
-        self.features = features
-
-    def transforom(self, X):
-        return X[self.features]

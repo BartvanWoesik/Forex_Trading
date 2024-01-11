@@ -4,6 +4,9 @@ import joblib
 from flask import Flask, request, jsonify
 import pandas as pd
 
+
+
+
 app = Flask(__name__)
 
 # Load the scikit-learn model
@@ -45,6 +48,7 @@ def predict():
         return predictions_list
 
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)})
 
 

@@ -10,17 +10,17 @@ data_pipeline:
   - 
     _target_: ProcessData.data_cleaning.drop_empty_window
     _partial_: true
-  -
-    _target_: ProcessData.data_window.add_normalized_cols
-    _partial_: true
-    cols:
-      - rsi
-      - mfi
-      - regrs
-      - cci
-      - sma
-      - tv
-    window: 3
+  # -
+    # _target_: ProcessData.data_window.add_normalized_cols
+    # _partial_: true
+    # cols:
+    #   - rsi
+    #   - mfi
+    #   - regrs
+    #   - cci
+    #   - sma
+    #   - tv
+    # window: 3
 
   - 
     _target_: ProcessData.data_cleaning.drop_empty_window
