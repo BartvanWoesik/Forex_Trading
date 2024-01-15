@@ -10,17 +10,7 @@ data_pipeline:
   - 
     _target_: ProcessData.data_cleaning.drop_empty_window
     _partial_: true
-  # -
-    # _target_: ProcessData.data_window.add_normalized_cols
-    # _partial_: true
-    # cols:
-    #   - rsi
-    #   - mfi
-    #   - regrs
-    #   - cci
-    #   - sma
-    #   - tv
-    # window: 3
+
 
   - 
     _target_: ProcessData.data_cleaning.drop_empty_window
@@ -35,9 +25,9 @@ model:
     max_depth: 5
     min_samples_leaf: 1
     max_leaf_nodes: 66
-    l2_regularization: 20
+    l2_regularization: 1
     max_bins: 25
-    max_iter: 5
+    max_iter: 50
     random_state: 1
   feature_depth: 3
 

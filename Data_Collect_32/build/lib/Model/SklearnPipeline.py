@@ -1,43 +1,78 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+from sklearn.ensemble import HistGradientBoostingClassifier
 from .model import AddNormalizedColsTransformer
+import pandas as pd
 
 
-class featureselector:
+class featureselector(BaseEstimator, TransformerMixin):
     def __init__(self, features: list[str]) -> None:
-        self.features = features
+        self.features = set(features)
 
-    def transforom(self, X):
-        return X[self.features]
+    def transform(self, X):
+        return X[list(self.features)]
+    
+    def fit_transform(self, X, *fit_args):
+        return X[list(self.features)]
+
 class CustomPipeline(BaseEstimator, TransformerMixin):
-    def __init__(self, cols_to_normalize, window=10):
-        self.cols_to_normalize = cols_to_normalize
+    def __init__(self, indicators, window=10):
+        self.features = self.featureconstructer(indicators, window)
+        self.indicators = indicators
         self.window = window
         self.pipeline = Pipeline(
             [
-                ("feature selector", featureselector(self.cols_to_normalize)),
+                ("feature selector", featureselector(self.features)),
                 (
                     "add_normalized_cols",
-                    AddNormalizedColsTransformer(cols=cols_to_normalize, window=window),
+                    AddNormalizedColsTransformer(self.indicators, self.window),
                 ),
+                ("model", HistGradientBoostingClassifier())
             ]
         )
 
-    def fit(self, X, y=None, sample_weight=None):
-        transformed_data = self.pipeline.named_steps["add_normalized_cols"].transform(X)
-        self.pipeline.named_steps["final model"].fit(transformed_data, y, sample_weight)
+    def featureconstructer(self, cols: list[str], window: int) -> list[str]:
+        """
+        Construct list of features that can be extracted from full dataset. 
+
+        Args:
+            cols list[str]: List of selected indicators from dataset
+            window int: number of bars that need to be looked back
+        """
+        features = []
+        for col in cols:
+            for i in range(1,window +1):
+                new_feature = col+str(i)
+                features.append(new_feature)
+        return features
+
+
+    def fit(self, X: pd.DataFrame, y=None, sample_weight=None):
+        # Transform data with all steps except the last one
+        transformed_data = self.transfrom_without_predictor(X)
+
+        # Fit the last step with the transformed data
+        self.pipeline.steps[-1][1].fit(transformed_data, y, sample_weight)
         return self
 
     def transform(self, X):
-        return self.pipeline.named_steps["add_normalized_cols"].transform(X)
+        return self.transfrom_without_predictor(X)
 
     def predict(self, X):
         # Use predict on the final step
-        transformed_data = self.pipeline.named_steps["add_normalized_cols"].transform(X)
-        return self.pipeline.named_steps["final model"].predict(transformed_data)
+        transformed_data = self.transfrom_without_predictor(X)
+        return self.pipeline.steps[-1][1].predict(transformed_data)
 
     def predict_proba(self, X):
-        transformed_data = self.pipeline.named_steps["add_normalized_cols"].transform(X)
-        return self.pipeline.named_steps["final model"].predict_proba(transformed_data)
+        transformed_data = self.transfrom_without_predictor(X)
+        return self.pipeline.steps[-1][1].predict_proba(transformed_data)
+    
+
+    def transfrom_without_predictor(self, X: pd.DataFrame) -> pd.DataFrame:
+        for _, step in self.pipeline.steps[:-1]:
+            print(step)
+            transformed_data = step.transform(X)
+        return transformed_data
+ 
 
 

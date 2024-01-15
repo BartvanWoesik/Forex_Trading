@@ -5,11 +5,12 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, cols, window=10):
-        self.cols = cols
+    def __init__(self, indicators: list[str], window: int):
+        self.indicators = indicators
         self.window = window
+        
 
-    def fit(self, X, y=None):
+    def fit(self,  *args, **kwargs):
         return self
 
     def transform(self, X, *args):
@@ -17,7 +18,7 @@ class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
 
         norm_col_names = []
         tot_cols = []
-        for col in self.cols:
+        for col in self.indicators:
                 # Create col names
                 cols_names = [col + str(i) for i in range(1, self.window + 1)]
                 norm_col_names = [

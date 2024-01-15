@@ -26,12 +26,12 @@ def main():
         pipeline = instantiate(cfg.data_pipeline)
         df = pd.read_csv(cfg.Data_Source)
         df = pipeline.apply(df.copy())
-        model_features = ["rsi", "mfi", "regrs", "cci", "sma", "tv"]
+        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
         dataset = Dataset(data=df, data_splitter=data_splitter)
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
-        custompipeline = CustomPipeline(model_features, 4)
+        custompipeline = CustomPipeline(indicators = model_features, window =  4)
         custompipeline.pipeline.steps.append(("final model", clf))
-
+        print(dataset.X_train.columns)
         model = custompipeline.fit(
             dataset.X_train,
             dataset.y_train,
