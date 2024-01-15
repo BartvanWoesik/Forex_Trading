@@ -198,7 +198,7 @@ namespace cAlgo.Robots
             csvhead += "low_price,";
 
 
-            for(int i = 1; i< 5; i++) 
+            for(int i = 1; i< 50; i++) 
             {
 
 

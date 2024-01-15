@@ -1,67 +1,85 @@
-
 import mlflow
-
+import joblib
 from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
-import pickle
 from ProcessData.dataset import Dataset
 from ProcessData.data_splitter import data_splitter
 from Evaluate.pips import get_pips_margin
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
+
 from sklearn.calibration import calibration_curve
+from sklearn.metrics import brier_score_loss
+
+from Model.SklearnPipeline import CustomPipeline
 
 
-PATH = './data/Data_collect_32.csv'
+PATH = "./data/Data_collect_32.csv"
 
 
 def main():
-
     initialize(config_path="../conf/")
-    cfg = compose(config_name='config.yaml')
-    with mlflow.start_run(experiment_id="243908727313542997", run_name='test') as run:
-
+    cfg = compose(config_name="config.yaml")
+    with mlflow.start_run(experiment_id="243908727313542997", run_name="test") as _run:
         # Define pipeline
         pipeline = instantiate(cfg.data_pipeline)
         df = pd.read_csv(cfg.Data_Source)
         df = pipeline.apply(df.copy())
-        model_features = create_window_list(cfg.model.feature_depth)
-        dataset = Dataset(data = df, data_splitter = data_splitter)
-        clf = HistGradientBoostingClassifier( **cfg.model.model_params)
-        model = clf.fit(dataset.X_train[model_features], 
-                        dataset.y_train, 
-                        sample_weight = dataset.X_train['sample_weight'])
-        pred_oot = model.predict(dataset.X_oot[model_features])
-        mlflow.log_metric('Pips',get_pips_margin(pred_oot,
-                                                    dataset.X_oot['next_close_price'],
-                                                     dataset.X_oot['close_price'] ) )
-        
-        calibrated_clf = CalibratedClassifierCV(clf, cv='prefit')
-        calibrated_clf.fit(dataset.X_train[model_features], dataset.y_train)
-        pred_calibrated = calibrated_clf.predict_proba(dataset.X_oot[model_features]).T[1]
-        threshold = max(calibration_curve(dataset.y_test, calibrated_clf.predict_proba(dataset.X_test[model_features]).T[1])[1])
-        mlflow.log_metric('Pips calibrated',get_pips_margin(pred_calibrated,
-                                                    dataset.X_oot['next_close_price'],
-                                                     dataset.X_oot['close_price'] ,
-                                                    threshold = threshold ))
+        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
+        dataset = Dataset(data=df, data_splitter=data_splitter)
+        clf = HistGradientBoostingClassifier(**cfg.model.model_params)
+        custompipeline = CustomPipeline(indicators = model_features, window =  4)
+        custompipeline.pipeline.steps.append(("final model", clf))
+        print(dataset.X_train.columns)
+        model = custompipeline.fit(
+            dataset.X_train,
+            dataset.y_train,
+            sample_weight=dataset.X_train["sample_weight"],
+        )
+        pred_oot = model.predict(dataset.X_oot)
+        mlflow.log_metric(
+            "Pips",
+            get_pips_margin(
+                pred_oot,
+                dataset.X_oot["next_close_price"],
+                dataset.X_oot["close_price"],
+            ),
+        )
 
+        calibrated_clf = CalibratedClassifierCV(clf, cv="prefit")
+        procceced_data_train = custompipeline.transform(dataset.X_train)
+        procceced_data_oot = custompipeline.transform(dataset.X_oot)
+        procceced_data_test = custompipeline.transform(dataset.X_test)
+        calibrated_clf.fit(procceced_data_train, dataset.y_train)
+        pred_calibrated = calibrated_clf.predict_proba(procceced_data_oot).T[1]
+        threshold = max(
+            calibration_curve(
+                dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]
+            )[1]
+        )
+        mlflow.log_metric(
+            "Pips calibrated",
+            get_pips_margin(
+                pred_calibrated,
+                dataset.X_oot["next_close_price"],
+                dataset.X_oot["close_price"],
+                threshold=threshold,
+            ),
+        )
+        mlflow.log_metric("Threshold", threshold)
+        mlflow.log_param(
+            "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
+        )
+
+
+        mlflow.log_metric("brier", brier_score_loss(dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]))
+        joblib.dump(model, "model.pkl")
 
         mlflow.log_artifact("conf\config.yaml")
         mlflow.log_params(cfg.model.model_params)
-        mlflow.log_param('feature_depth', cfg.model.feature_depth)
-        
+        mlflow.log_param("feature_depth", cfg.model.feature_depth)
 
-
-def create_window_list(window: int )-> list:
-    model_features = [ 'rsi1', 'mfi1', 'regrs1', 'cci1']
-    model_features += ['rsi_norm_' + str(i) for i in range(1,window)]
-    model_features += ['mfi_norm_' + str(i) for i in range(1,window)]
-    # model_features += ['tv_norm_' + str(i) for i in range(0,window)]
-    model_features += ['regrs_norm_' + str(i) for i in range(1,window)]
-    model_features += ['sma_norm_' + str(i) for i in range(1,window)]
-    model_features += ['cci_norm_' + str(i) for i in range(1,window)]
-    return model_features
 
 if __name__ == "__main__":
     main()
