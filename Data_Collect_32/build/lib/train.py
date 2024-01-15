@@ -10,10 +10,10 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.calibration import calibration_curve
-from sklearn.utils import estimator_html_repr
 from sklearn.metrics import brier_score_loss
 
 from Model.SklearnPipeline import CustomPipeline
+
 
 PATH = "./data/Data_collect_32.csv"
 
@@ -29,7 +29,7 @@ def main():
         model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
         dataset = Dataset(data=df, data_splitter=data_splitter)
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
-        custompipeline = CustomPipeline(indicators = model_features, window =  10)
+        custompipeline = CustomPipeline(indicators = model_features, window =  4)
         custompipeline.pipeline.steps.append(("final model", clf))
         print(dataset.X_train.columns)
         model = custompipeline.fit(
@@ -67,15 +67,11 @@ def main():
                 threshold=threshold,
             ),
         )
-
-
-        mlflow.sklearn.log_model(custompipeline, 'model')
-        
         mlflow.log_metric("Threshold", threshold)
         mlflow.log_param(
             "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
         )
-    
+
 
         mlflow.log_metric("brier", brier_score_loss(dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]))
         joblib.dump(model, "model.pkl")
