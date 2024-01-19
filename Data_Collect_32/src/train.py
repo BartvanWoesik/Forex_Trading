@@ -15,24 +15,29 @@ from sklearn.metrics import brier_score_loss
 
 from Model.SklearnPipeline import CustomPipeline
 
-PATH = "./data/Data_collect_32.csv"
-
+mlflow.set_tracking_uri('http://127.0.0.1:5000/')
 
 def main():
     initialize(config_path="../conf/")
     cfg = compose(config_name="config.yaml")
-    with mlflow.start_run(experiment_id="243908727313542997", run_name="test") as _run:
-        # Define pipeline
-        pipeline = instantiate(cfg.data_pipeline)
+    with mlflow.start_run(experiment_id="854451128264867666", run_name="test") as _run:
+        # Define data pipeline
+        data_pipeline = instantiate(cfg.data_pipeline)
         df = pd.read_csv(cfg.Data_Source)
-        df = pipeline.apply(df.copy())
-        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
+        df = data_pipeline.apply(df.copy())
+        # Create Dasaset
         dataset = Dataset(data=df, data_splitter=data_splitter)
+
+        # Define Indicators
+        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
+
+        # Create model 
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
-        custompipeline = CustomPipeline(indicators = model_features, window =  10)
-        custompipeline.pipeline.steps.append(("final model", clf))
-        print(dataset.X_train.columns)
-        model = custompipeline.fit(
+        model = CustomPipeline(indicators = model_features, window =  4)
+        model.pipeline.steps.append(("final model", clf))
+
+        # Fit model
+        model = model.fit(
             dataset.X_train,
             dataset.y_train,
             sample_weight=dataset.X_train["sample_weight"],
@@ -47,12 +52,19 @@ def main():
             ),
         )
 
-        calibrated_clf = CalibratedClassifierCV(clf, cv="prefit")
-        procceced_data_train = custompipeline.transform(dataset.X_train)
-        procceced_data_oot = custompipeline.transform(dataset.X_oot)
-        procceced_data_test = custompipeline.transform(dataset.X_test)
+        # Calibrate classifier
+        calibrated_clf = CalibratedClassifierCV(model.pipeline.steps[-1][1], cv="prefit")
+
+        # TransformData
+        procceced_data_train = model.transform(dataset.X_train)
+        procceced_data_oot = model.transform(dataset.X_oot)
+        procceced_data_test = model.transform(dataset.X_test)
+
+        # Fit Calibrate classifier
         calibrated_clf.fit(procceced_data_train, dataset.y_train)
         pred_calibrated = calibrated_clf.predict_proba(procceced_data_oot).T[1]
+
+        # Log Metrics
         threshold = max(
             calibration_curve(
                 dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]
@@ -69,7 +81,7 @@ def main():
         )
 
 
-        mlflow.sklearn.log_model(custompipeline, 'model')
+        mlflow.sklearn.log_model(model, 'model')
         
         mlflow.log_metric("Threshold", threshold)
         mlflow.log_param(
