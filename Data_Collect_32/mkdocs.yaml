@@ -1,4 +1,10 @@
 site_name: Forex Trading
 nav:
   - Home: index.md
+  - Test: test.md
 theme: readthedocs
+plugins:
+  - search
+  - swagger-ui-tag
+  - mkdocstrings:
+      default_handler: python
