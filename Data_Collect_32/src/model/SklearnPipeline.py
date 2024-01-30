@@ -3,7 +3,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import HistGradientBoostingClassifier
 from .model import AddNormalizedColsTransformer
 import pandas as pd
-
+from my_logger.custom_logger import logger
 
 class featureselector(BaseEstimator, TransformerMixin):
     def __init__(self, features: list[str]) -> None:
@@ -45,10 +45,12 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
             for i in range(1,window +1):
                 new_feature = col+str(i)
                 features.append(new_feature)
+        logger.info(f"Features included in the model are:\n{', '.join(features)}")
         return features
 
 
     def fit(self, X: pd.DataFrame, y=None, sample_weight=None):
+        logger.info("Start fitting the pipeline.")
         # Transform data with all steps except the last one
         transformed_data = self.transfrom_without_predictor(X)
 
