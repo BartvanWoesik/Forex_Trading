@@ -8,3 +8,5 @@ plugins:
   - swagger-ui-tag
   - mkdocstrings:
       default_handler: python
+hooks:
+  - deploy/scoring_script.py

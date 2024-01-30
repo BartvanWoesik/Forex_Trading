@@ -7,49 +7,30 @@ from pydantic import BaseModel
 import pandas as pd
 import uvicorn
 import json
+import os
+
+from swagger_for_mkdocs.transform_swagger_json import save_openapi_config
+
 
 app = FastAPI()
 
-# Load the scikit-learn model
-model_path = "model.pkl"
-model = joblib.load(model_path)
-
-
-
-# Define CORS settings
-origins = ["*"]  # Allow requests from any origin
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
-
 class InputData(BaseModel):
-    InputData: dict
-    # Add other input fields as needed
+    InputData: dict = {'test': 'test1'}
 
 
-# def save_openapi_json():
-#     app.title = "Forex Trading Bot"
-#     app.openapi_tags = None
-#     app.version = ''
+def get_model(model_name: str = "model.pkl") -> any:
+    # Get the current directory of the script
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    # Construct the relative path to the model file
+    model_path = os.path.join(current_directory, model_name)
     
-#     # for i, _ in enumerate(app.routes): 
-#     #     app.routes[i].path = 'http://127.0.0.1:500' + app.routes[i].path
-#     openapi_data = app.openapi()
-#     openapi_data['host'] = 'http://127.0.0.1:500'
-#     openapi_data['dom_id'] = 'http://127.0.0.1:500'
-#     openapi_data['url'] = 'http://127.0.0.1:500'
-#     # Change "openapi.json" to desired filename
-#     with open("docs/openapi.json", "w") as file:
-#         json.dump(openapi_data, file)
-
-
-
+    # Check if the model file exists
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file '{model_name}' not found in the current directory.")
+    
+    # Load the model
+    model = joblib.load(model_path)
+    return model
 
 
 @app.get("/")
@@ -75,7 +56,7 @@ def predict(input_data):
         )
 
         # Make predictions
-        predictions = model.predict_proba(new_data) 
+        predictions = MODEL.predict_proba(new_data) 
 
         # Convert predictions to a list
         predictions_list = str(float(predictions[:, 1]))
@@ -89,8 +70,9 @@ def predict(input_data):
 
 if __name__ == "__main__":
 
+    MODEL = get_model
+    uvicorn.run(app, host = "127.0.0.1", port = 500)
 
-    uvicorn.run(app, host = "localhost", port = 500)
 
-# save_openapi_json()
+save_openapi_config(app, 'docs/', host='http://127.0.0.1:500', title = 'Forex Trading')
  
