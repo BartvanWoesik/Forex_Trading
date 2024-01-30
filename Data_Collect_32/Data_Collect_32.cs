@@ -185,23 +185,25 @@ namespace cAlgo.Robots
             // sa.Add(dateRealServer.ToString("H:mm"));
             csvhead = csvhead + "Datum" + ",";
 
-            sa.Add(Bars.ClosePrices.Last(1).ToString("F6", culture));
-            csvhead += "close_price,"; 
-
-            sa.Add(Bars.OpenPrices.Last(1).ToString("F6", culture));
-            csvhead += "open_price,";
-
-            sa.Add(Bars.HighPrices.Last(1).ToString("F6", culture));
-            csvhead += "high_price," ;
-
-            sa.Add(Bars.LowPrices.Last(1).ToString("F6", culture));
-            csvhead += "low_price,";
+            
 
 
             for(int i = 1; i< 50; i++) 
             {
 
-
+                sa.Add(Bars.ClosePrices.Last(i).ToString("F6", culture));
+                csvhead += "close_price" + i.ToString()+ ","; 
+    
+                sa.Add(Bars.OpenPrices.Last(i).ToString("F6", culture));
+                csvhead += "open_price" + i.ToString()+ ",";
+    
+                sa.Add(Bars.HighPrices.Last(i).ToString("F6", culture));
+                csvhead += "high_price" + i.ToString()+ ",";
+    
+                sa.Add(Bars.LowPrices.Last(i).ToString("F6", culture));
+                csvhead += "low_price" + i.ToString()+ ",";
+                
+                
                 sa.Add(_rsi.Result.Last(i).ToString("F1", culture));
                 csvhead += "rsi" + i.ToString()+ ",";
 

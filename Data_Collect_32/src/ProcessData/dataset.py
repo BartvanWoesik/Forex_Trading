@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import Any, Optional, Callable, Union
-
+from my_logger.custom_logger import logger
 
 class Dataset(dict):
     def __init__(
@@ -37,7 +37,7 @@ class Dataset(dict):
 
     def _split_data(self) -> None:
         self._is_data_splitted = True
-        print("Splitted data")
+        logger.info('Data is splitted')
         if self.data_splitter is None:
             self.splits = {"all_data": (self.X, self.y)}
         else:

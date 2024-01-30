@@ -15,10 +15,16 @@ from sklearn.metrics import brier_score_loss
 
 from Model.SklearnPipeline import CustomPipeline
 
+from my_logger.custom_logger import  logger
+
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
 
+
+
+
+
 def main():
-    initialize(config_path="../conf/")
+    initialize(config_path="../conf/", version_base=None)
     cfg = compose(config_name="config.yaml")
     with mlflow.start_run(experiment_id="854451128264867666", run_name="test") as _run:
         # Define data pipeline
@@ -29,9 +35,10 @@ def main():
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci']
+        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
 
         # Create model 
+        logger.info('Create model')
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
         model = CustomPipeline(indicators = model_features, window =  4)
         model.pipeline.steps.append(("final model", clf))
@@ -47,8 +54,8 @@ def main():
             "Pips",
             get_pips_margin(
                 pred_oot,
-                dataset.X_oot["next_close_price"],
-                dataset.X_oot["close_price"],
+                dataset.X_oot["next_close_price1"],
+                dataset.X_oot["close_price1"],
             ),
         )
 
@@ -74,8 +81,8 @@ def main():
             "Pips calibrated",
             get_pips_margin(
                 pred_calibrated,
-                dataset.X_oot["next_close_price"],
-                dataset.X_oot["close_price"],
+                dataset.X_oot["next_close_price1"],
+                dataset.X_oot["close_price1"],
                 threshold=threshold,
             ),
         )

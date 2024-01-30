@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from my_logger.custom_logger import logger
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -37,6 +38,7 @@ class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
                 )
                 tot_cols += norm_col_names
                 tot_cols += cols_names
+        
         return df[tot_cols]
     
     def fit_transform(self,X, *fit_args):
