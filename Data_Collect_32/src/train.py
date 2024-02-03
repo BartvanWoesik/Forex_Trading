@@ -40,7 +40,7 @@ def main():
         # Create model 
         logger.info('Create model')
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
-        model = CustomPipeline(indicators = model_features, window =  4)
+        model = CustomPipeline(indicators = model_features, window =  cfg.model.feature_depth)
         model.pipeline.steps.append(("final model", clf))
 
         # Fit model

@@ -25,16 +25,17 @@
       "post": {
         "summary": "Predict",
         "operationId": "predict_predict_post",
-        "parameters": [
-          {
-            "name": "input_data",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "title": "Input Data"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Input Data"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",

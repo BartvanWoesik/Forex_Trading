@@ -1,7 +1,8 @@
 site_name: Forex Trading
 nav:
-  - Home: index.md
-  - Test: test.md
+  - Home: home.md
+  - Indicators: indicators.md
+  - API: index.md
 theme: readthedocs
 plugins:
   - search
