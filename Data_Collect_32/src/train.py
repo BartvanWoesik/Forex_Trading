@@ -63,9 +63,9 @@ def main():
         calibrated_clf = CalibratedClassifierCV(model.pipeline.steps[-1][1], cv="prefit")
 
         # TransformData
-        procceced_data_train = model.transform(dataset.X_train)
-        procceced_data_oot = model.transform(dataset.X_oot)
-        procceced_data_test = model.transform(dataset.X_test)
+        procceced_data_train = model.transfrom_without_predictor(dataset.X_train)
+        procceced_data_oot = model.transfrom_without_predictor(dataset.X_oot)
+        procceced_data_test = model.transfrom_without_predictor(dataset.X_test)
 
         # Fit Calibrate classifier
         calibrated_clf.fit(procceced_data_train, dataset.y_train)
