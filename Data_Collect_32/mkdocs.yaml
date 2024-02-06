@@ -10,4 +10,4 @@ plugins:
   - mkdocstrings:
       default_handler: python
 hooks:
-  - deploy/scoring_script.py
+  - deploy\scoring_script.py

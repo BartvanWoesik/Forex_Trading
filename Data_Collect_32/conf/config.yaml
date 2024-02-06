@@ -17,15 +17,12 @@ Data_Source: './data/Unprocessed_Data.csv'
   
 model:
   model_params:
-    learning_rate: 10
-    max_depth: 5
-    min_samples_leaf: 10
-    max_leaf_nodes: 66
+    learning_rate: 0.1
+    max_depth: 15
+    min_samples_leaf: 5
+    max_leaf_nodes: 60
     l2_regularization: 1
-    max_bins: 25
-    max_iter: 5
-    random_state: 42
-    class_weight: "balanced"
-  feature_depth: 49
-
-
+    max_bins: 250
+    max_iter: 25
+    random_state: 2
+  feature_depth: 1

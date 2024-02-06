@@ -37,7 +37,8 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         self.pipeline = Pipeline(
             [
                 ("FeatureSelector", feature_selector),
-                ("StandardScaler", scaler),
+                ('NormCols', AddNormalizedColsTransformer(self.indicators, self.window)),
+                # ("StandardScaler", scaler),
               
               
             ]
@@ -78,7 +79,8 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         return self.pipeline.steps[-1][1].predict(transformed_data)
 
     def predict_proba(self, X):
-        return self.pipeline.Predict(X = X)
+        transformed_data = self.transfrom_without_predictor(X)
+        return self.pipeline.steps[-1][1].predict_proba(X = transformed_data)
     
 
     def transfrom_without_predictor(self, X: pd.DataFrame) -> pd.DataFrame:

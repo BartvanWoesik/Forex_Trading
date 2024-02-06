@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import Any, Optional, Callable, Union
-
+from my_logger.custom_logger import logger
 
 class Dataset(dict):
     def __init__(
@@ -27,7 +27,7 @@ class Dataset(dict):
     def X(self) -> pd.DataFrame:
         return self._X
 
-    @property
+    @property 
     def y(self) -> np.array:
         return self._y
 
@@ -37,11 +37,13 @@ class Dataset(dict):
 
     def _split_data(self) -> None:
         self._is_data_splitted = True
-        print("Splitted data")
         if self.data_splitter is None:
             self.splits = {"all_data": (self.X, self.y)}
         else:
             self.splits = self.data_splitter(self.X, self.y)
+        logger.info('Data is splitted')
+        for split_name, (_X, _y) in self.splits.items():
+            logger.info(f'{split_name}: {len(_X)} records')
         self._run_checks()
 
     def _run_checks(self) -> None:

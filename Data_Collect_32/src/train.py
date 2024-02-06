@@ -1,5 +1,5 @@
 import mlflow
-import joblib
+import pickle
 from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
@@ -8,7 +8,8 @@ from ProcessData.data_splitter import data_splitter
 from Evaluate.pips import get_pips_margin
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
-
+from sklearn.metrics import PrecisionRecallDisplay
+from matplotlib import pyplot as plt
 from sklearn.calibration import calibration_curve
 from sklearn.utils import estimator_html_repr
 from sklearn.metrics import brier_score_loss
@@ -20,7 +21,7 @@ from my_logger.custom_logger import  logger
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
 
 
-
+ARTIFACT_PATH = 'artifacts/'
 
 
 def main():
@@ -35,69 +36,64 @@ def main():
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi', 'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
+        model_features = ['rsi' ,'mfi']
+                        #   'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
 
         # Create model 
         logger.info('Create model')
         clf = HistGradientBoostingClassifier(**cfg.model.model_params)
         model = CustomPipeline(indicators = model_features, window =  cfg.model.feature_depth)
-        model.pipeline.steps.append(("final model", clf))
-
+    
+        # Calibrate classifier
+        calibrated_clf = CalibratedClassifierCV(clf, method = "isotonic", cv=10, ensemble=False)
+        # Add calibration to the pipeline
+        model.pipeline.steps.append(('calibrated_classifier', calibrated_clf))
         # Fit model
         model = model.fit(
             dataset.X_train,
             dataset.y_train,
             sample_weight=dataset.X_train["sample_weight"],
         )
-        pred_oot = model.predict(dataset.X_oot)
-        mlflow.log_metric(
-            "Pips",
-            get_pips_margin(
-                pred_oot,
-                dataset.X_oot["next_close_price1"],
-                dataset.X_oot["close_price1"],
-            ),
-        )
-
-        # Calibrate classifier
-        calibrated_clf = CalibratedClassifierCV(model.pipeline.steps[-1][1], cv="prefit")
-
-        # TransformData
-        procceced_data_train = model.transfrom_without_predictor(dataset.X_train)
-        procceced_data_oot = model.transfrom_without_predictor(dataset.X_oot)
-        procceced_data_test = model.transfrom_without_predictor(dataset.X_test)
-
-        # Fit Calibrate classifier
-        calibrated_clf.fit(procceced_data_train, dataset.y_train)
-        pred_calibrated = calibrated_clf.predict_proba(procceced_data_oot).T[1]
-
-        # Log Metrics
-        threshold = max(
-            calibration_curve(
-                dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]
-            )[1]
-        )
-        mlflow.log_metric(
-            "Pips calibrated",
-            get_pips_margin(
-                pred_calibrated,
-                dataset.X_oot["next_close_price1"],
-                dataset.X_oot["close_price1"],
-                threshold=threshold,
-            ),
-        )
 
 
+
+        for split_name, (X, y) in dataset.splits.items():
+            mlflow.log_metric(
+                f"Pips-{split_name}",
+                get_pips_margin(
+                    model.predict_proba(X).T[1],
+                    X["next_close_price1"],
+                    X["close_price1"],
+                    threshold=0.7
+                ),
+            )
+
+       
+    
+        pr_path = 'Precision-Recall/'
+        for split_name, (X, y) in dataset.splits.items():
+
+            # Create Precision-Recall curve
+            display = PrecisionRecallDisplay.from_estimator(
+                model.pipeline, X, y,  plot_chance_level=True
+            )
+            _ = display.ax_.set_title(f"2-class Precision-Recall curve - {split_name}")
+            plt.savefig(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg')
+            mlflow.log_artifact(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg', artifact_path=pr_path[:-1])
+        mlflow.log_artifact("src\scikit_learn_pipeline.html", artifact_path='pipeline')
+
+
+
+        for split_name, (X, y) in dataset.splits.items():
+            mlflow.log_metric(f"Brier-{split_name}", brier_score_loss(y, model.predict_proba(X).T[1]))
         mlflow.sklearn.log_model(model, 'model')
         
-        mlflow.log_metric("Threshold", threshold)
         mlflow.log_param(
             "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
         )
     
-
-        mlflow.log_metric("brier", brier_score_loss(dataset.y_test, calibrated_clf.predict_proba(procceced_data_test).T[1]))
-        joblib.dump(model, "model.pkl")
+        print(type(model))
+        pickle.dump(model, open("model.pkl", 'wb'))
 
         mlflow.log_artifact("conf\config.yaml")
         mlflow.log_params(cfg.model.model_params)

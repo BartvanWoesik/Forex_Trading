@@ -3,31 +3,44 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import HistGradientBoostingClassifier
 from .model import AddNormalizedColsTransformer
 import pandas as pd
+from my_logger.custom_logger import logger
+from sklearn.preprocessing import StandardScaler
 
-
-class featureselector(BaseEstimator, TransformerMixin):
+class FeatureSelector(BaseEstimator, TransformerMixin):
     def __init__(self, features: list[str]) -> None:
         self.features = set(features)
 
     def transform(self, X):
+        logger.info('Selecting features from Dataset')
         return X[list(self.features)]
-    
-    def fit_transform(self, X, *fit_args):
-        return X[list(self.features)]
+
+    def fit_transform(self, X, *fit_args, **fit_kwargs):
+        return self.transform(X)
+
+    def fit(self, X, *fit_args, **fit_kwargs):
+        return self
+
+
+
+
 
 class CustomPipeline(BaseEstimator, TransformerMixin):
     def __init__(self, indicators, window=10):
         self.features = self.featureconstructer(indicators, window)
         self.indicators = indicators
         self.window = window
+        # Create an instance of the FeatureSelector
+        feature_selector = FeatureSelector(self.features)
+
+        # Create an instance of the StandardScaler
+        scaler = StandardScaler()
         self.pipeline = Pipeline(
             [
-                ("feature selector", featureselector(self.features)),
-                (
-                    "add_normalized_cols",
-                    AddNormalizedColsTransformer(self.indicators, self.window),
-                ),
-                ("model", HistGradientBoostingClassifier())
+                ("FeatureSelector", feature_selector),
+                ('NormCols', AddNormalizedColsTransformer(self.indicators, self.window)),
+                ("StandardScaler", scaler),
+              
+              
             ]
         )
 
@@ -44,19 +57,21 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
             for i in range(1,window +1):
                 new_feature = col+str(i)
                 features.append(new_feature)
+        logger.info(f"Features included in the model are:\n{', '.join(features)}")
         return features
 
 
     def fit(self, X: pd.DataFrame, y=None, sample_weight=None):
-        # Transform data with all steps except the last one
-        transformed_data = self.transfrom_without_predictor(X)
+        logger.info("Start fitting the pipeline.")
 
-        # Fit the last step with the transformed data
-        self.pipeline.steps[-1][1].fit(transformed_data, y, sample_weight)
+
+        self.pipeline.fit(X = X,y = y)
+
+
         return self
 
     def transform(self, X):
-        return self.transfrom_without_predictor(X)
+        self.pipeline.transform(X = X)
 
     def predict(self, X):
         # Use predict on the final step
@@ -65,14 +80,14 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
 
     def predict_proba(self, X):
         transformed_data = self.transfrom_without_predictor(X)
-        return self.pipeline.steps[-1][1].predict_proba(transformed_data)
+        return self.pipeline.steps[-1][1].predict_proba(X = transformed_data)
     
 
     def transfrom_without_predictor(self, X: pd.DataFrame) -> pd.DataFrame:
         for _, step in self.pipeline.steps[:-1]:
-            print(step)
-            transformed_data = step.transform(X)
-        return transformed_data
+        
+            X = step.transform(X)
+        return X
  
 
 
