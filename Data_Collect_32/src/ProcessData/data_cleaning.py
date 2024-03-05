@@ -50,10 +50,8 @@ def create_label(df: pd.DataFrame) -> pd.DataFrame:
     _df = df.copy()
     diff = _df["next_close_price1"] - _df["close_price1"]
     _df["diff"] = diff * 1000
-    _df["sample_weight"] = [
-        2.1 if ((x > -2.0) | (x < 2.0)) else 1 for x in _df["diff"]
-    ]
-    _df["y"] = (diff >= 0.001).astype(int)
+    _df["sample_weight"] = diff*diff *1000
+    _df["y"] = [(1 if x >= 0 else 0) for x in diff]
     return _df
 
 

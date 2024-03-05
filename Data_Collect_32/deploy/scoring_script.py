@@ -17,7 +17,7 @@ from my_logger.custom_logger import  logger
 app = FastAPI()
 
 import src.Model as Model
-sys.modules['Module'] = Model
+sys.modules['Model'] = Model
 
 
 
@@ -53,10 +53,12 @@ def predict(input_data: dict):
     try:
         # Convert input data to a DataFrame
         new_data = pd.DataFrame.from_dict(input_data, orient="index").T
-
-        # Convert Datum to datetime and other columns to numeric
-        new_data["Datum"] = pd.to_datetime(new_data["Datum"], dayfirst=True)
-        columns_to_convert = new_data.columns.difference(["Datum"])
+        if 'Datum' in new_data.columns:
+            # Convert Datum to datetime and other columns to numeric
+            new_data["Datum"] = pd.to_datetime(new_data["Datum"], dayfirst=True)
+            columns_to_convert = new_data.columns.difference(["Datum"])
+        else:
+            columns_to_convert = new_data.columns
 
         def convert_to_numeric(column):
             return pd.to_numeric(column, errors="coerce")
@@ -64,7 +66,7 @@ def predict(input_data: dict):
         new_data[columns_to_convert] = new_data[columns_to_convert].apply(
             convert_to_numeric
         )
-        print(type(MODEL))
+        logger.info(new_data)
         # Make predictions
         predictions = MODEL.predict_proba(new_data) 
 

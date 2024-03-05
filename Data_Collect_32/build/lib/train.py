@@ -1,5 +1,5 @@
 import mlflow
-import joblib
+import pickle
 from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
@@ -36,7 +36,8 @@ def main():
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi' ,'mfi', 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
+        model_features = ['rsi' ,'mfi']
+                        #   , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
 
         # Create model 
         logger.info('Create model')
@@ -63,12 +64,12 @@ def main():
                     model.predict_proba(X).T[1],
                     X["next_close_price1"],
                     X["close_price1"],
-                    threshold=0.7
+                    threshold=0.6
                 ),
             )
 
        
-
+    
         pr_path = 'Precision-Recall/'
         for split_name, (X, y) in dataset.splits.items():
 
@@ -91,9 +92,9 @@ def main():
             "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
         )
     
-
-        joblib.dump(model, "model.pkl")
-
+        print(type(model))
+        pickle.dump(model, open("model.pkl", 'wb'))
+        mlflow.log_artifact('model.pkl')
         mlflow.log_artifact("conf\config.yaml")
         mlflow.log_params(cfg.model.model_params)
         mlflow.log_param("feature_depth", cfg.model.feature_depth)

@@ -17,12 +17,14 @@ Data_Source: './data/Unprocessed_Data.csv'
   
 model:
   model_params:
-    learning_rate: 0.1
-    max_depth: 15
-    min_samples_leaf: 5
-    max_leaf_nodes: 60
-    l2_regularization: 1
-    max_bins: 250
-    max_iter: 25
+    learning_rate: 0.01
+    max_depth: 1500
+    min_samples_leaf: 10
+    max_leaf_nodes: 6000
+    l2_regularization: 2
+    max_bins: 255
+    max_iter: 2500
     random_state: 2
-  feature_depth: 1
+    verbose: 2
+    early_stopping: True
+  feature_depth: 149

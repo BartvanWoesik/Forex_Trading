@@ -188,7 +188,7 @@ namespace cAlgo.Robots
             
 
 
-            for(int i = 1; i< 50; i++) 
+            for(int i = 1; i< 150; i++) 
             {
 
                 sa.Add(Bars.ClosePrices.Last(i).ToString("F6", culture));

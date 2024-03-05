@@ -16,18 +16,19 @@ class AddNormalizedColsTransformer(BaseEstimator, TransformerMixin):
 
     def transform(self, X: pd.DataFrame, *args):
         df = X.copy()
-        for col in self.indicators:
+        # for col in self.indicators:
                 
-                # Create col names
-                cols_names = [col + str(i) for i in range(1, self.window + 1)]
-                logger.info(f'Normalizing cols: {cols_names}')
-                ranges = np.apply_along_axis(self.min_max_norm, axis=1, arr=df[cols_names])
-                assert ranges.shape[0] == df.shape[0]
-                df_ranges = pd.DataFrame(ranges, columns=cols_names)
-                df = df.reset_index(drop = True)
-                df[cols_names] = df_ranges[cols_names]
+        #         # Create col names
+        #         cols_names = [col + str(i) for i in range(1, self.window + 1)]
+        #         logger.info(f'Normalizing cols: {cols_names}')
+        #         ranges = np.apply_along_axis(self.min_max_norm, axis=1, arr=df[cols_names])
+        #         assert ranges.shape[0] == df.shape[0]
+        #         df_ranges = pd.DataFrame(ranges, columns=cols_names)
+        #         df = df.reset_index(drop = True)
+        #         df[cols_names] = df_ranges[cols_names]
    
-        
+        df = df.reindex(sorted(df.columns), axis = 1)
+        logger.info(f"final cols: {df.columns}")
         return  df
     
     def fit_transform(self,X, *fit_args):

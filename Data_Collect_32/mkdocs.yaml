@@ -3,11 +3,14 @@ nav:
   - Home: home.md
   - Indicators: indicators.md
   - API: index.md
-theme: readthedocs
+theme: material
+
 plugins:
   - search
   - swagger-ui-tag
   - mkdocstrings:
       default_handler: python
+
+
 hooks:
   - deploy\scoring_script.py

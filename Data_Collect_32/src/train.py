@@ -36,8 +36,7 @@ def main():
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi' ,'mfi']
-                        #   'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
+        model_features = ['rsi' ,'mfi'   , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
 
         # Create model 
         logger.info('Create model')
@@ -45,7 +44,7 @@ def main():
         model = CustomPipeline(indicators = model_features, window =  cfg.model.feature_depth)
     
         # Calibrate classifier
-        calibrated_clf = CalibratedClassifierCV(clf, method = "isotonic", cv=10, ensemble=False)
+        calibrated_clf = CalibratedClassifierCV(clf,  cv=10, ensemble=False)
         # Add calibration to the pipeline
         model.pipeline.steps.append(('calibrated_classifier', calibrated_clf))
         # Fit model
@@ -64,7 +63,7 @@ def main():
                     model.predict_proba(X).T[1],
                     X["next_close_price1"],
                     X["close_price1"],
-                    threshold=0.7
+                    threshold=0.75
                 ),
             )
 
@@ -94,7 +93,7 @@ def main():
     
         print(type(model))
         pickle.dump(model, open("model.pkl", 'wb'))
-
+        mlflow.log_artifact('model.pkl')
         mlflow.log_artifact("conf\config.yaml")
         mlflow.log_params(cfg.model.model_params)
         mlflow.log_param("feature_depth", cfg.model.feature_depth)

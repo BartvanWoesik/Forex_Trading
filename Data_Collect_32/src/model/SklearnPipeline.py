@@ -33,12 +33,10 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         feature_selector = FeatureSelector(self.features)
 
         # Create an instance of the StandardScaler
-        scaler = StandardScaler()
         self.pipeline = Pipeline(
             [
                 ("FeatureSelector", feature_selector),
                 ('NormCols', AddNormalizedColsTransformer(self.indicators, self.window)),
-                # ("StandardScaler", scaler),
               
               
             ]
