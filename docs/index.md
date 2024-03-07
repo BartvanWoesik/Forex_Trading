@@ -1,5 +1,3 @@
-# API description
-
-<swagger-ui src="openapi.json"/>
 
 
+--8<-- "README.md"
