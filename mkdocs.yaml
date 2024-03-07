@@ -1,16 +1,35 @@
 site_name: Forex Trading
 nav:
-  - Home: home.md
+  - Home: index.md
   - Indicators: indicators.md
-  - API: index.md
-theme: material
+  - API: SwaggerAPI.md
+theme:
+  name: material
+  features:
+        - content.tabs.link
+        - content.code.copy
+        - navigation.instant
+        - navigation.tracking
+        - navigation.tabs
+        - navigation.tabs.sticky
+        - navigation.sections
+        - navigation.expand
+
+  palette:
+        - media: "(prefers-color-scheme: light)"
+          scheme: default
+          toggle:
+              icon: material/toggle-switch-off-outline
+              name: Switch to dark mode
+
+        - media: "(prefers-color-scheme: dark)"
+          scheme: slate
+          toggle:
+              icon: material/toggle-switch
+              name: Switch to light mode
+
 
 plugins:
   - search
   - swagger-ui-tag
-  - mkdocstrings:
-      default_handler: python
 
-
-hooks:
-  - deploy\scoring_script.py
