@@ -1,20 +1,20 @@
-Data_Collect_32/data/
+/data/
 
-Data_Collect_32/mlruns/
+/mlruns/
 
 
-Data_Collect_32/obj/
+/obj/
 
-Data_Collect_32/bin/
-Data_Collect_32/src/__pycache__/
+/bin/
+/src/__pycache__/
 __pycache__/
-Data_Collect_32/src/Evaluate/__pycache__/
-Data_Collect_32/src/model/__pycache__/
-Data_Collect_32/src/process_data/__pycache__/
-Data_Collect_32/Artifact_trading/
-Data_Collect_32/obj/	
-Data_Collect_32/obj/
-Data_Collect_32/mlartifacts/
-Data_Collect_32/mlruns/
-Data_Collect_32/mlartifacts/
-Data_Collelct_32/build/
+/src/Evaluate/__pycache__/
+/src/model/__pycache__/
+/src/process_data/__pycache__/
+/Artifact_trading/
+/obj/	
+/obj/
+/mlartifacts/
+/mlruns/
+/mlartifacts/
+/build/
