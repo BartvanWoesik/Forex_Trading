@@ -3,6 +3,7 @@ from copy import deepcopy
 
 
 from typing import Optional
+from my_logger.custom_logger import logger
 
 
 def safe(fn):
@@ -31,6 +32,7 @@ class PandasDataPipeline:
 
     def _apply(self, df: pd.DataFrame, verbose: Optional[bool] = True) -> pd.DataFrame:
         for step_number, step in enumerate(self.steps, start=1):
+            logger.info(f"Step {step_number}: {step}: {df.shape}")
             if isinstance(step, tuple):
                 df = step[1](df)
             else:

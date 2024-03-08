@@ -25,18 +25,19 @@ ARTIFACT_PATH = 'artifacts/'
 
 
 def main():
-    initialize(config_path="../conf/", version_base=None)
+    initialize(config_path="conf/", version_base=None)
     cfg = compose(config_name="config.yaml")
     with mlflow.start_run(experiment_id="854451128264867666", run_name="test") as _run:
         # Define data pipeline
         data_pipeline = instantiate(cfg.data_pipeline)
         df = pd.read_csv(cfg.Data_Source)
         df = data_pipeline.apply(df.copy())
+        logger.info(f"Data shape: {df.shape}")
         # Create Dasaset
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi' ,'mfi'   , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
+        model_features = ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
 
         # Create model 
         logger.info('Create model')
@@ -79,7 +80,6 @@ def main():
             _ = display.ax_.set_title(f"2-class Precision-Recall curve - {split_name}")
             plt.savefig(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg')
             mlflow.log_artifact(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg', artifact_path=pr_path[:-1])
-        mlflow.log_artifact("src\scikit_learn_pipeline.html", artifact_path='pipeline')
 
 
 

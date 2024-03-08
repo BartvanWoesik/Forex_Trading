@@ -7,24 +7,22 @@ data_pipeline:
   - 
     _target_: ProcessData.data_cleaning.create_label
     _partial_: true
-  - 
-    _target_: ProcessData.data_cleaning.drop_empty_window
-    _partial_: true
 
 
 
-Data_Source: './data/Unprocessed_Data.csv'   
+Data_Source: 'data/Unprocessed_Data.csv'   
   
 model:
   model_params:
-    learning_rate: 0.01
-    max_depth: 1500
+    learning_rate: 0.1
+    max_depth: 150
     min_samples_leaf: 10
-    max_leaf_nodes: 6000
-    l2_regularization: 2
-    max_bins: 255
+    max_leaf_nodes: 60
+    l2_regularization: 10
+    max_bins: 25
     max_iter: 2500
     random_state: 2
-    verbose: 2
+    verbose: 0
     early_stopping: True
-  feature_depth: 149
+    class_weight: 'balanced'
+  feature_depth: 10
