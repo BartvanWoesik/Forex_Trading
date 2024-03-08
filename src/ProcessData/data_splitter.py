@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import ShuffleSplit
 from typing import Dict, Tuple
-
+from my_logger.custom_logger import logger
 
 def data_splitter(
     X: pd.DataFrame,
@@ -11,7 +11,6 @@ def data_splitter(
 ) -> Dict[str, Tuple[pd.DataFrame, pd.DataFrame]]:
     X = X.reset_index()
     oot_range = list(X[round(0.85 * X.shape[0]) : X.shape[0]].index)
-
     splitter = ShuffleSplit(test_size=0.2, n_splits=n_splits, random_state=random_state)
     row_in_train_test = ~X.index.isin(oot_range)
     split = splitter.split(X[row_in_train_test], y[row_in_train_test])
