@@ -5,6 +5,7 @@ src/Data_Collect_32.egg-info/PKG-INFO
 src/Data_Collect_32.egg-info/SOURCES.txt
 src/Data_Collect_32.egg-info/dependency_links.txt
 src/Data_Collect_32.egg-info/top_level.txt
+src/Evaluate/denisity.py
 src/Evaluate/pips.py
 src/Model/SklearnPipeline.py
 src/Model/__init__.py

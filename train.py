@@ -18,6 +18,8 @@ from Model.SklearnPipeline import CustomPipeline
 
 from my_logger.custom_logger import  logger
 
+from Evaluate.density import plot_density
+
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
 
 
@@ -68,9 +70,10 @@ def main():
                 ),
             )
 
-       
+            
     
         pr_path = 'Precision-Recall/'
+        dens_path = 'Density/'
         for split_name, (X, y) in dataset.splits.items():
 
             # Create Precision-Recall curve
@@ -81,6 +84,14 @@ def main():
             plt.savefig(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg')
             mlflow.log_artifact(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg', artifact_path=pr_path[:-1])
 
+            plot_density(
+                model.predict_proba(X),
+                y,
+                ARTIFACT_PATH + dens_path,
+                f'density-{split_name}.jpeg',
+                threshold=0.75,
+            )
+            mlflow.log_artifact(ARTIFACT_PATH + dens_path +f'density-{split_name}.jpeg', artifact_path=dens_path[:-1])
 
 
         for split_name, (X, y) in dataset.splits.items():
