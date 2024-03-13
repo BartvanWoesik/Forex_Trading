@@ -49,7 +49,9 @@ def landing_page():
 
 @app.post("/predict")
 def predict(input_data: dict):
-    logger.info(input_data)
+    # Save input_data to a file
+    with open("input_data.txt", "w") as file:
+        file.write(str(input_data))
     try:
         # Convert input data to a DataFrame
         new_data = pd.DataFrame.from_dict(input_data, orient="index").T
