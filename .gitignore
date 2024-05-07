@@ -19,6 +19,7 @@ __pycache__/
 /mlartifacts/
 /artifacts/** 
 /build/
+# TODO: Fix this
 artifacts/
 artifacts/**
 artifacts/Density/
