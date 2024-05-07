@@ -17,5 +17,5 @@ __pycache__/
 /mlartifacts/
 /mlruns/
 /mlartifacts/
-/artifacts/
+/artifacts/** 
 /build/
