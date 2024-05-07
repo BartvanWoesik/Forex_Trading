@@ -26,3 +26,4 @@ artifacts/**
 artifacts/Density/
 artifacts
 /artifacts/Precision-Recall/*.jpeg
+*/artifacts/*
