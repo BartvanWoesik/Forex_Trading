@@ -28,3 +28,4 @@ artifacts
 /artifacts/Precision-Recall/*.jpeg
 */artifacts/*
 **/artifacts/**
+./artifacts 
