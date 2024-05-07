@@ -6,15 +6,16 @@
 /obj/
 
 /bin/
-/src/__pycache__/
+/forex_trader/__pycache__/
 __pycache__/
-/src/Evaluate/__pycache__/
-/src/model/__pycache__/
-/src/process_data/__pycache__/
+/forex_trader/Evaluate/__pycache__/
+/forex_trader/model/__pycache__/
+/forex_trader/process_data/__pycache__/
 /Artifact_trading/
 /obj/	
 /obj/
 /mlartifacts/
 /mlruns/
 /mlartifacts/
+/artifacts/
 /build/
