@@ -29,3 +29,4 @@ artifacts
 */artifacts/*
 **/artifacts/**
 ./artifacts 
+*.jpeg
