@@ -3,22 +3,26 @@ import pickle
 from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
-from ProcessData.dataset import Dataset
-from ProcessData.data_splitter import data_splitter
-from Evaluate.pips import get_pips_margin
+from matplotlib import pyplot as plt
+
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import PrecisionRecallDisplay
-from matplotlib import pyplot as plt
 from sklearn.calibration import calibration_curve
 from sklearn.utils import estimator_html_repr
 from sklearn.metrics import brier_score_loss
 
-from Model.SklearnPipeline import CustomPipeline
+from model_forge.data.dataset import Dataset
+from model_forge.model.model_evaluator import ModelEvaluator
+from model_forge.model.model_orchastrator import ModelOrchestrator
+
+from forex_trader.ProcessData.data_splitter import data_splitter
+from forex_trader.Evaluate.pips import get_pips_margin
+from forex_trader.Model.SklearnPipeline import CustomPipeline
 
 from my_logger.custom_logger import  logger
 
-from Evaluate.density import plot_density
+from forex_trader.Evaluate.density import plot_density
 
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
 
@@ -39,34 +43,34 @@ def main():
         dataset = Dataset(data=df, data_splitter=data_splitter)
 
         # Define Indicators
-        model_features = ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price']
+        model_features = ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price', 'high_price', 'low_price' ]
 
         # Create model 
         logger.info('Create model')
-        clf = HistGradientBoostingClassifier(**cfg.model.model_params)
-        model = CustomPipeline(indicators = model_features, window =  cfg.model.feature_depth)
+        model_orchestrator = ModelOrchestrator(cfg)
+        model = model_orchestrator.create_pipeline()
     
         # Calibrate classifier
-        calibrated_clf = CalibratedClassifierCV(clf,  cv=10, ensemble=False)
+        # calibrated_clf = CalibratedClassifierCV(clf,  cv=10, ensemble=False)
         # Add calibration to the pipeline
-        model.pipeline.steps.append(('calibrated_classifier', calibrated_clf))
+        # model.pipeline.steps.append(('calibrated_classifier', calibrated_clf))
         # Fit model
         model = model.fit(
-            dataset.X_train,
-            dataset.y_train,
-            sample_weight=dataset.X_train["sample_weight"],
+            dataset.X,
+            dataset.y,
+            # sample_weight=dataset.X_train["sample_weight"],
         )
 
 
 
-        for split_name, (X, y) in dataset.splits.items():
+        for split_name, (X, y) in dataset:
             mlflow.log_metric(
                 f"Pips-{split_name}",
                 get_pips_margin(
                     model.predict_proba(X).T[1],
                     X["next_close_price1"],
                     X["close_price1"],
-                    threshold=0.75
+                    threshold=0.65
                 ),
             )
 
@@ -74,11 +78,11 @@ def main():
     
         pr_path = 'Precision-Recall/'
         dens_path = 'Density/'
-        for split_name, (X, y) in dataset.splits.items():
+        for split_name, (X, y) in dataset:
 
             # Create Precision-Recall curve
             display = PrecisionRecallDisplay.from_estimator(
-                model.pipeline, X, y,  plot_chance_level=True
+                model, X, y,  plot_chance_level=True
             )
             _ = display.ax_.set_title(f"2-class Precision-Recall curve - {split_name}")
             plt.savefig(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg')
@@ -94,20 +98,20 @@ def main():
             mlflow.log_artifact(ARTIFACT_PATH + dens_path +f'density-{split_name}.jpeg', artifact_path=dens_path[:-1])
 
 
-        for split_name, (X, y) in dataset.splits.items():
+        for split_name, (X, y) in dataset:
             mlflow.log_metric(f"Brier-{split_name}", brier_score_loss(y, model.predict_proba(X).T[1]))
         mlflow.sklearn.log_model(model, 'model')
         
-        mlflow.log_param(
-            "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
-        )
+        # mlflow.log_param(
+        #     "OOT_date", min(pd.to_datetime(dataset.X_oot["Datum"], dayfirst=True))
+        # )
     
         print(type(model))
         pickle.dump(model, open("model.pkl", 'wb'))
         mlflow.log_artifact('model.pkl')
         mlflow.log_artifact("conf\config.yaml")
-        mlflow.log_params(cfg.model.model_params)
-        mlflow.log_param("feature_depth", cfg.model.feature_depth)
+        # mlflow.log_params(cfg.model.model_params)
+        # mlflow.log_param("feature_depth", cfg.model.feature_depth)
 
 
 if __name__ == "__main__":

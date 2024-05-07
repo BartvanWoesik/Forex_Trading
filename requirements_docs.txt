@@ -1,4 +1,0 @@
-mkdocs
-mkdocs-swagger-ui-tag
-mkdocs-material
-git+https://github.com/BartvanWoesik/SwaggerForMkdocs.git
