@@ -5,20 +5,14 @@ from hydra.utils import instantiate
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from sklearn.ensemble import HistGradientBoostingClassifier
-from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import PrecisionRecallDisplay
-from sklearn.calibration import calibration_curve
-from sklearn.utils import estimator_html_repr
 from sklearn.metrics import brier_score_loss
 
 from model_forge.data.dataset import Dataset
-from model_forge.model.model_evaluator import ModelEvaluator
 from model_forge.model.model_orchastrator import ModelOrchestrator
 
 from forex_trader.ProcessData.data_splitter import data_splitter
 from forex_trader.Evaluate.pips import get_pips_margin
-from forex_trader.Model.SklearnPipeline import CustomPipeline
 
 from my_logger.custom_logger import  logger
 
@@ -40,7 +34,7 @@ def main():
         df = data_pipeline.apply(df.copy())
         logger.info(f"Data shape: {df.shape}")
         # Create Dasaset
-        dataset = Dataset(data=df, data_splitter=data_splitter)
+        dataset = Dataset(data=df, splits_columns=['train', 'test'])
 
         # Define Indicators
         model_features = ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price', 'high_price', 'low_price' ]
@@ -56,8 +50,8 @@ def main():
         # model.pipeline.steps.append(('calibrated_classifier', calibrated_clf))
         # Fit model
         model = model.fit(
-            dataset.X,
-            dataset.y,
+            dataset.X_train,
+            dataset.y_train,
             # sample_weight=dataset.X_train["sample_weight"],
         )
 
@@ -70,7 +64,7 @@ def main():
                     model.predict_proba(X).T[1],
                     X["next_close_price1"],
                     X["close_price1"],
-                    threshold=0.65
+                    threshold=0.55
                 ),
             )
 
