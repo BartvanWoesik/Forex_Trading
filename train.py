@@ -1,5 +1,6 @@
 import mlflow
 import pickle
+import os
 from hydra import compose, initialize
 from hydra.utils import instantiate
 import pandas as pd
@@ -79,6 +80,7 @@ def main():
                 model, X, y,  plot_chance_level=True
             )
             _ = display.ax_.set_title(f"2-class Precision-Recall curve - {split_name}")
+            os.makedirs(ARTIFACT_PATH + pr_path , exist_ok=True)
             plt.savefig(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg')
             mlflow.log_artifact(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg', artifact_path=pr_path[:-1])
 
