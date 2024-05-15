@@ -37,8 +37,6 @@ def main():
         # Create Dasaset
         dataset = Dataset(data=df, splits_columns=['train', 'test'])
 
-        # Define Indicators
-        model_features = ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price', 'high_price', 'low_price' ]
 
         # Create model 
         logger.info('Create model')

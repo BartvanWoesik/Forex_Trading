@@ -43,15 +43,23 @@ def shift_close(df: pd.DataFrame) -> pd.DataFrame:
     _df = df.copy()
     _df["next_close_price1"] = df["close_price1"].shift(-1)
     _df["next_open_price1"] = df["open_price1"].shift(-1)
+    _df["next_high_price1"] = df["high_price1"].shift(-1)
+    _df["next_low_price1"] = df["low_price1"].shift(-1)
     return _df
 
 
 def create_label(df: pd.DataFrame) -> pd.DataFrame:
     _df = df.copy()
+
+    down_movement = _df["next_open_price1"] - _df["next_low_price1"]
+    up_movement = _df["next_close_price1"] - _df["next_open_price1"]
+
+    ratio = up_movement / down_movement
+
     diff = _df["next_close_price1"] - _df["close_price1"]
     _df["diff"] = diff * 1000
-    _df["sample_weight"] = diff*diff *1000
-    _df["y"] = [(1 if x >= 0 else 0) for x in diff]
+ 
+    _df["y"] = [(1 if x >= 5 else 0) for x in ratio]
     return _df
 
 
