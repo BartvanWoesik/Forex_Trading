@@ -55,17 +55,9 @@ def main():
         )
 
 
+        
 
-        for split_name, (X, y) in dataset:
-            mlflow.log_metric(
-                f"Pips-{split_name}",
-                get_pips_margin(
-                    model.predict_proba(X).T[1],
-                    X["next_close_price1"],
-                    X["close_price1"],
-                    threshold=0.55
-                ),
-            )
+
 
             
     
@@ -73,9 +65,19 @@ def main():
         dens_path = 'Density/'
         for split_name, (X, y) in dataset:
 
+            predproba = model.predict_proba(X)
+            mlflow.log_metric(
+                f"Pips-{split_name}",
+                get_pips_margin(
+                    predproba,
+                    X["next_close_price1"],
+                    X["close_price1"],
+                    threshold=0.55
+                ),
+            )
             # Create Precision-Recall curve
-            display = PrecisionRecallDisplay.from_estimator(
-                model, X, y,  plot_chance_level=True
+            display = PrecisionRecallDisplay.from_predictions(
+                 y, predproba,  plot_chance_level=True
             )
             _ = display.ax_.set_title(f"2-class Precision-Recall curve - {split_name}")
             os.makedirs(ARTIFACT_PATH + pr_path , exist_ok=True)
@@ -83,7 +85,7 @@ def main():
             mlflow.log_artifact(ARTIFACT_PATH + pr_path +f'pr-{split_name}.jpeg', artifact_path=pr_path[:-1])
 
             plot_density(
-                model.predict_proba(X),
+                predproba,
                 y,
                 ARTIFACT_PATH + dens_path,
                 f'density-{split_name}.jpeg',
@@ -91,9 +93,9 @@ def main():
             )
             mlflow.log_artifact(ARTIFACT_PATH + dens_path +f'density-{split_name}.jpeg', artifact_path=dens_path[:-1])
 
+            mlflow.log_metric(f"Brier-{split_name}", brier_score_loss(y,predproba))
 
-        for split_name, (X, y) in dataset:
-            mlflow.log_metric(f"Brier-{split_name}", brier_score_loss(y, model.predict_proba(X).T[1]))
+     
         mlflow.sklearn.log_model(model, 'model')
         
         # mlflow.log_param(

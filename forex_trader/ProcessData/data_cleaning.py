@@ -59,7 +59,7 @@ def create_label(df: pd.DataFrame) -> pd.DataFrame:
     diff = _df["next_close_price1"] - _df["close_price1"]
     _df["diff"] = diff * 1000
  
-    _df["y"] = [(1 if x >= 5 else 0) for x in ratio]
+    _df["y"] = [(1 if x >= 0 else 0) for x in diff]
     return _df
 
 
