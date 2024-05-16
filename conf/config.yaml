@@ -7,6 +7,9 @@ data_pipeline:
   - 
     _target_: forex_trader.ProcessData.data_cleaning.create_label
     _partial_: true
+  -
+    _target_: forex_trader.ProcessData.splits.train_test.add_train_test_indixes
+    _partial_: true
 
 
 
@@ -19,18 +22,11 @@ model:
   - select_features:
       _target_: forex_trader.Model.SklearnPipeline.FeatureSelector
       features: ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price', 'high_price', 'low_price' ]
-      depth: 10
-  
-  - HistGradientBoostingClassifier:
-      _target_: sklearn.ensemble.HistGradientBoostingClassifier
-      learning_rate: 0.05723818391467435
+      depth: 15
 
-      verbose: 0
-      class_weight: balanced
-      max_iter: 3997
-      l2_regularization: 2.525756277489002
-      early_stopping: True
-      max_leaf_nodes: 106
-      max_bins: 196
-      max_depth: 605
-      random_state: 42
+  - deeplearn:
+      _target_: forex_trader.Model.deeplearn.neuralnet
+      nodes:      ['150', '0.15', '250', '0.1', '100', '1']
+      activation: ['relu', 'None', 'relu', 'None', 'relu', 'sigmoid']
+      layer_type: ['dense', 'dropout', 'dense', 'dropout', 'dense', 'dense']
+      epochs: 500

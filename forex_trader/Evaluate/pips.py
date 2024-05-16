@@ -24,5 +24,5 @@ def get_pips_margin(
     """     
     diff = next_close_price - close_price
     realized_positions = diff[predictions >= threshold] - commision
-    total_margin = sum(realized_positions)
+    total_margin = sum(realized_positions.dropna())
     return total_margin * 1000

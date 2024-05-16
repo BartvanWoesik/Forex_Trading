@@ -4,15 +4,15 @@ import os
 
 def plot_density(pred, true_labels,path, file_name,  threshold):
     plt.close()
-    pred_1 = [x if y > threshold else 0 for x, y in zip(pred[:, 1], true_labels)]
+    pred_1 = [x if y > threshold else 0 for x, y in zip(pred, true_labels)]
     pred_1 = [x for x in pred_1 if x != 0]
 
-    pred_0 = [x if y < threshold else 0 for x, y in zip(pred[:, 1], true_labels)]
+    pred_0 = [x if y < threshold else 0 for x, y in zip(pred, true_labels)]
     pred_0 = [x for x in pred_0 if x != 0]
 
     # Create a density plot using seaborn
-    sns.kdeplot(pred_0, shade=True)
-    sns.kdeplot(pred_1, shade=True)
+    sns.kdeplot(pred_0, fill=True)
+    sns.kdeplot(pred_1, fill=True)
     plt.xlabel('Probability')
     plt.ylabel('Density')
     plt.title('Density Plot of Predicted Probabilities')

@@ -16,7 +16,7 @@ from swagger_for_mkdocs.transform_swagger_json import save_openapi_config
 from my_logger.custom_logger import  logger
 app = FastAPI()
 
-import src.Model as Model
+import forex_trader.Model as Model
 sys.modules['Model'] = Model
 
 
@@ -73,7 +73,8 @@ def predict(input_data: dict):
         predictions = MODEL.predict_proba(new_data) 
 
         # Convert predictions to a list
-        predictions_list = float(predictions[:, 1])
+        logger.info(predictions)
+        predictions_list = float(predictions)
 
         return predictions_list
 
