@@ -28,6 +28,7 @@ swagger-for-mkdocs = {git = "https://github.com/BartvanWoesik/SwaggerForMkdocs.g
 mkdocs = "^1.6.0"
 ipykernel = "^6.29.4"
 mkdocs-swagger-ui-tag = "^0.6.11"
+mkdocs-material = "^9.5.49"
 
 [build-system]
 requires = ["poetry-core"]
