@@ -26,6 +26,7 @@ class neuralnet( BaseEstimator, TransformerMixin):
                                 learning_rate=0.00001
                             ),
                             loss='binary_crossentropy',
+                            
                             metrics=['precision', "recall"]
         )
 
@@ -35,8 +36,7 @@ class neuralnet( BaseEstimator, TransformerMixin):
         return class_weights
 
     def fit(self, X, y):
-        class_weights = self.create_class_weights(y)
-        self.model.fit(X, y, epochs=self.epochs)
+        self.model.fit(X, y, epochs=self.epochs, batch_size = 2000)
         return self
 
     def predict_proba(self, X):

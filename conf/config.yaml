@@ -22,11 +22,11 @@ model:
   - select_features:
       _target_: forex_trader.Model.SklearnPipeline.FeatureSelector
       features: ['rsi'  , 'tv', 'sma', 'williams', 'regrs', 'cci', 'close_price', 'open_price', 'high_price', 'low_price' ]
-      depth: 15
+      depth: 2
 
   - deeplearn:
       _target_: forex_trader.Model.deeplearn.neuralnet
-      nodes:      ['150', '0.15', '250', '0.1', '100', '1']
-      activation: ['relu', 'None', 'relu', 'None', 'relu', 'sigmoid']
-      layer_type: ['dense', 'dropout', 'dense', 'dropout', 'dense', 'dense']
-      epochs: 500
+      nodes:      ['10', '0.05',   '5', '2', '1']
+      activation: ['relu', 'None',    'relu', 'softmax', 'sigmoid']
+      layer_type: ['dense', 'dropout', ' dense',  'dense' , 'dense']
+      epochs: 10000

@@ -68,7 +68,7 @@ def predict(input_data: dict):
         new_data[columns_to_convert] = new_data[columns_to_convert].apply(
             convert_to_numeric
         )
-        logger.info(new_data)
+        # logger.info(new_data)
         # Make predictions
         predictions = MODEL.predict_proba(new_data) 
 
