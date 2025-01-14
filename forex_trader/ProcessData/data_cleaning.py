@@ -34,7 +34,7 @@ def check_is_in_time(df: pd.DataFrame) -> pd.DataFrame:
     return _df
 
 
-def extract_y(df: pd.DataFrame()) -> pd.DataFrame:
+def extract_y(df: pd.DataFrame) -> pd.DataFrame:
     df["y"] = df["Label"]
     return df
 
@@ -50,11 +50,6 @@ def shift_close(df: pd.DataFrame) -> pd.DataFrame:
 
 def create_label(df: pd.DataFrame) -> pd.DataFrame:
     _df = df.copy()
-
-    down_movement = _df["next_open_price1"] - _df["next_low_price1"]
-    up_movement = _df["next_close_price1"] - _df["next_open_price1"]
-
-    ratio = up_movement / down_movement
 
     diff = _df["next_close_price1"] - _df["close_price1"]
     _df["diff"] = diff * 1000
