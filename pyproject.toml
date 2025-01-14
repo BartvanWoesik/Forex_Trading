@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "3.11.5"
+python = "^3.11.5"
 scikit-learn = "^1.4.2"
 pandas = "^1.2.2"
 mlflow = "^2.12.1"
@@ -27,6 +27,7 @@ swagger-for-mkdocs = {git = "https://github.com/BartvanWoesik/SwaggerForMkdocs.g
 [tool.poetry.group.dev.dependencies]
 mkdocs = "^1.6.0"
 ipykernel = "^6.29.4"
+mkdocs-swagger-ui-tag = "^0.6.11"
 
 [build-system]
 requires = ["poetry-core"]
